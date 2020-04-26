@@ -6,9 +6,9 @@ class Station
     @@stations
   end
 
-  def initialize(name)
-    @station_name = name
-    @trains = []
+  def initialize(**opts)
+    @station_name = opts[:name]
+    @trains = opts[:trains] || []
     @@stations << self
   end
 
