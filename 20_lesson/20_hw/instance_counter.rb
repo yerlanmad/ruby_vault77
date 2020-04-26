@@ -7,6 +7,10 @@ module InstanceCounter
     attr_accessor :instances
   end
 
+  def all_instances
+    self.class.instances
+  end
+
   protected
 
   def register_instance

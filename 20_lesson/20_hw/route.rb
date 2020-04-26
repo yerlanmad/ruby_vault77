@@ -34,6 +34,6 @@ class Route
 
   # Может выводить список всех станций по-порядку от начальной до конечной
   def get_stations
-    stations.map(&:station_name).join(' | ')
+    stations.map(&:to_s)
   end
 end

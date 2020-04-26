@@ -38,14 +38,14 @@ class App
     when '1'
       print 'Enter name of station: '
       @stations << Station.new(gets.chomp)
-      puts @stations.map(&:station_name).join(' | ')
+      puts @stations.join(' | ')
       stations_menu
     when '2'
       choose_station_menu
 
       menu_item = gets.chomp.to_i
       case menu_item
-      when (1..@stations.length)
+      when (1..@stations.size)
         @stations[menu_item - 1].get_trains
         stations_menu
       when '0'
@@ -112,12 +112,12 @@ class App
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@stations.length)
+    when (1..@stations.size)
       @stations_to_add << @stations[menu_item - 1]
-      puts @stations_to_add.map(&:station_name).join(' | ')
+      puts @stations_to_add.join(' | ')
       create_route_menu
     when 99
-      routes_menu until @stations_to_add.length > 1
+      routes_menu until @stations_to_add.size > 1
       @routes << Route.new(@stations_to_add)
       routes_menu
     when 0
@@ -133,8 +133,8 @@ class App
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@routes.length)
-      puts @routes[menu_item - 1].get_stations
+    when (1..@routes.size)
+      puts @routes[menu_item - 1].get_stations.join(' | ')
       stations_in_route_menu
     when 0
       routes_menu
@@ -149,12 +149,12 @@ class App
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@routes.length)
+    when (1..@routes.size)
       choose_station_menu
 
       menu_item2 = gets.chomp.to_i
       case menu_item2
-      when (1..@stations.length)
+      when (1..@stations.size)
         @routes[menu_item - 1].add_station(@stations[menu_item2 - 1])
         add_station_in_route_menu
       when 0
@@ -176,16 +176,16 @@ class App
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@routes.length)
+    when (1..@routes.size)
       puts 'Chose stations:'
-      @routes[menu_item - 1].stations.each.with_index do |st, i|
-        puts "| #{i + 1} | #{st.station_name}"
+      @routes[menu_item - 1].get_stations.each_with_index do |st, i|
+        puts "| #{i + 1} | #{st}"
       end
       puts '| 0 | Back'
 
       menu_item2 = gets.chomp.to_i
       case menu_item2
-      when (1..@routes[menu_item - 1].stations.length)
+      when (1..@routes[menu_item - 1].stations.size)
         @routes[menu_item - 1].delete_station(@routes[menu_item - 1]
           .stations[menu_item2 - 1])
         remove_station_from_route
@@ -210,7 +210,9 @@ class App
     when '1'
       print 'Enter number of train: '
       @trains << PassengerTrain.new(gets.chomp)
+
       puts @trains.map(&:train_number).join(' | ')
+      puts @trains.map(&:all_instances).join(' | ')
       trains_menu
     when '2'
       print 'Enter number of train: '
@@ -229,12 +231,12 @@ class App
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@trains.length)
+    when (1..@trains.size)
       choose_route_menu
 
       menu_item2 = gets.chomp.to_i
       case menu_item2
-      when (1..@routes.length)
+      when (1..@routes.size)
         @trains[menu_item - 1].accept_route(@routes[menu_item2 - 1])
         assign_route_menu
       when 0
@@ -256,33 +258,22 @@ class App
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@trains.length)
-      puts 'Select direction: '
-      puts '| 1 | Forward'
-      puts '| 2 | Backward'
-      puts '| 0 | Back'
+    when (1..@trains.size)
+      print "| 1 | Forward\n| 2 | Backward\nSelect direction: "
 
       menu_item2 = gets.chomp
       case menu_item2
       when '1'
-        @trains[menu_item - 1].move_train('fwd')
-        puts "Current station: #{@trains[menu_item - 1].get_station('current')}"
-        puts "Next station: #{@trains[menu_item - 1].get_station('next')}"
-        puts "Previous: #{@trains[menu_item - 1].get_station('previous')}"
-        move_train_menu
+        @trains[menu_item - 1].travel_forward
       when '2'
-        @trains[menu_item - 1].move_train('backwd')
-        puts "Current station: #{@trains[menu_item - 1].get_station('current')}"
-        puts "Next station: #{@trains[menu_item - 1].get_station('next')}"
-        puts "Previous: #{@trains[menu_item - 1].get_station('previous')}"
-        move_train_menu
-      when '0'
-        move_train_menu
+        @trains[menu_item - 1].travel_backward
       else
         puts 'Wrong choice'
-        move_train_menu
       end
-
+      puts "Previous: #{@trains[menu_item - 1].previous_station}\n" +
+           "Current station: #{@trains[menu_item - 1].current_station}\n" +
+           "Next station: #{@trains[menu_item - 1].next_station}"
+      move_train_menu
     when 0
       trains_menu
     else
@@ -293,15 +284,13 @@ class App
 
   def add_remove_railcars_menu
     choose_train_menu
-
     menu_item = gets.chomp.to_i
-    case menu_item
-    when (1..@trains.length)
-      puts '| 1 | Attach car'
-      puts '| 2 | Detach car'
-      puts '| 0 | Back'
 
+    case menu_item
+    when (1..@trains.size)
+      puts "| 1 | Attach car\n| 2 | Detach car\n| 0 | Back"
       menu_item2 = gets.chomp
+
       case
       when menu_item2 == '1' && @trains[menu_item - 1].train_type == 'Passenger'
         print 'Enter number of seats: '
@@ -310,7 +299,7 @@ class App
         gets.chomp.to_i.times do
           @trains[menu_item - 1].attach_car(PassengerCar.new(num_of_seats))
         end
-        puts "Number of cars: #{@trains[menu_item - 1].rail_cars.length}"
+        puts "Number of cars: #{@trains[menu_item - 1].rail_cars.size}"
         trains_menu
       when menu_item2 == '1' && @trains[menu_item - 1].train_type == 'Cargo'
         print 'Enter load mass: '
@@ -319,11 +308,11 @@ class App
         gets.chomp.to_i.times do
           @trains[menu_item - 1].attach_car(FreightCar.new(load_mass))
         end
-        puts "Number of cars: #{@trains[menu_item - 1].rail_cars.length}"
+        puts "Number of cars: #{@trains[menu_item - 1].rail_cars.size}"
         trains_menu
       when menu_item2 == '2'
         @trains[menu_item - 1].detach_car
-        puts "Number of cars: #{@trains[menu_item - 1].rail_cars.length}"
+        puts "Number of cars: #{@trains[menu_item - 1].rail_cars.size}"
         trains_menu
       when menu_item2 == '0'
         add_remove_railcars_menu
@@ -342,22 +331,22 @@ class App
 
   def choose_route_menu
     puts 'Choose route:'
-    @routes.each.with_index do |route, i|
-      puts "| #{i + 1} | From #{route.stations.first.station_name} " +
-           "to #{route.stations.last.station_name}"
+    @routes.each_with_index do |route, i|
+      puts "| #{i + 1} | From #{route.get_stations.first} " +
+           "to #{route.get_stations.last}"
     end
     puts "| 0 | Back"
   end
 
   def choose_station_menu
     puts 'Choose station:'
-    @stations.each.with_index { |st, i| puts "| #{i + 1} | #{st.station_name}" }
+    @stations.each_with_index { |st, i| puts "| #{i + 1} | #{st}" }
     puts '| 0 | Back'
   end
 
   def choose_train_menu
     puts 'Choose train:'
-    @trains.each.with_index { |tr, i| puts "| #{i + 1} | #{tr.train_number} #{tr.train_type}" }
+    @trains.each_with_index { |tr, i| puts "| #{i + 1} | #{tr.train_number} #{tr.train_type}" }
     puts '| 0 | Back'
   end
 end
