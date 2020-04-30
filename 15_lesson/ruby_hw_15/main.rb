@@ -12,4 +12,4 @@ require_relative "freight_car"
 
 require_relative "app"
 
-application = App.new
+App.new.main_menu

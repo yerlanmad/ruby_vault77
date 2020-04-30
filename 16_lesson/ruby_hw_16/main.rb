@@ -1,6 +1,3 @@
-require_relative "instance_counter"
-require_relative "manufacturer"
-
 require_relative "train"
 require_relative "passenger_train"
 require_relative "cargo_train"
@@ -15,4 +12,4 @@ require_relative "freight_car"
 
 require_relative "app"
 
-application = App.new
+App.new.main_menu

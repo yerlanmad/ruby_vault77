@@ -1,373 +1,341 @@
 class App
-
   def initialize
     @stations = []
     @routes = []
     @trains = []
-    @stations_to_add = []
-    self.main_menu
   end
 
-  private
   def main_menu
-    puts "Select from Main menu: "
-    puts "| 1 | Stations"
-    puts "| 2 | Routes"
-    puts "| 3 | Trains"
-    puts "| 0 | Exit"
+    system 'clear'
+    print "| 1 | Stations\n| 2 | Routes\n| 3 | Trains\n| 0 | Exit\nSelect from Main menu: "
 
     case gets.chomp
-    when "1"
-      self.stations_menu
-    when "2"
-      self.routes_menu
-    when "3"
-      self.trains_menu
-    when "0"
-      puts "Good bye"
+    when '1'
+      stations_menu
+    when '2'
+      routes_menu
+    when '3'
+      trains_menu
+    when '0'
+      puts 'Good bye'
     else
-      puts "Wrong choice"
-      self.main_menu
+      puts 'Wrong choice'
+      main_menu
     end
   end
 
+  private
+
   def stations_menu
-    puts "Select from Stations menu: "
-    puts "| 1 | Create station"
-    puts "| 2 | Get list of trains"
-    puts "| 0 | Back"
+    print "| 1 | Create station\n| 2 | Get list of trains\n| 0 | Back\nSelect from Stations menu: "
 
     case gets.chomp
-    when "1"
-      print "Enter name of station: "
+    when '1'
+      print 'Enter name of station: '
       @stations << Station.new(gets.chomp)
-      puts @stations.map {|st| st.station_name}.join(" | ")
-      self.stations_menu
-    when "2"
-      self.choose_station_menu
+      puts @stations.join(' | ')
+      stations_menu
+    when '2'
+      choose_station_menu
 
       menu_item = gets.chomp.to_i
       case menu_item
-      when (1..@stations.length)
-        @stations[menu_item-1].get_trains
-        self.stations_menu
-      when "0"
-        self.stations_menu
+      when (1..@stations.size)
+        puts @stations[menu_item - 1].get_trains.join(' | ')
       else
-        puts "Wrong choice"
-        self.stations_menu
+        puts 'Wrong choice'
       end
-    when "0"
-      self.main_menu
+      stations_menu
+    when '0'
+      main_menu
     else
-      puts "Wrong choice"
-      self.stations_menu
+      puts 'Wrong choice'
+      stations_menu
     end
   end
 
   def routes_menu
-    puts "Select from Routes menu: "
-    puts "| 1 | Create route"
-    puts "| 2 | Add station in route"
-    puts "| 3 | Remove station from route"
-    puts "| 4 | Get list of stations in route"
-    puts "| 0 | Back"
+    print "| 1 | Create route\n| 2 | Add station in route\n" +
+          "| 3 | Remove station from route\n| 4 | Get list of stations in route\n" +
+          "| 0 | Back\nSelect from Routes menu: "
 
     case gets.chomp
-    when "1"
+    when '1'
       @stations_to_add = []
-      self.create_route_menu
-    when "2"
-      self.add_station_in_route_menu
-    when "3"
-      self.remove_station_from_route
-    when "4"
-      self.stations_in_route_menu
-    when "0"
-      self.main_menu
+      create_route_menu
+    when '2'
+      add_station_in_route_menu
+    when '3'
+      remove_station_from_route
+    when '4'
+      stations_in_route_menu
+    when '0'
+      main_menu
     else
-      puts "Wrong choice"
-      self.routes_menu
+      puts 'Wrong choice'
+      routes_menu
     end
   end
 
   def trains_menu
-    puts "Select from Trains menu: "
-    puts "| 1 | Create train"
-    puts "| 2 | Assign route"
-    puts "| 3 | Move train by route"
-    puts "| 4 | Add/Remove railcars to/from train"
-    puts "| 0 | Back"
+    print "| 1 | Create train\n| 2 | Assign route\n| 3 | Move train by route\n" +
+          "| 4 | Add/Remove railcars to/from train\n| 0 | Back\nSelect from Trains menu: "
 
     case gets.chomp
-    when "1"
-      self.create_train_menu
-    when "2"
-      self.assign_route_menu
-    when "3"
-      self.move_train_menu
-    when "4"
-      self.add_remove_railcars_menu
-    when "0"
-      self.main_menu
+    when '1'
+      create_train_menu
+    when '2'
+      assign_route_menu
+    when '3'
+      move_train_menu
+    when '4'
+      add_remove_railcars_menu
+    when '0'
+      main_menu
     else
-      puts "Wrong choice"
-      self.trains_menu
+      puts 'Wrong choice'
+      trains_menu
     end
   end
 
   def create_route_menu
-    self.choose_station_menu
-    puts "| 99 | Accept"
+    puts '| 99 | Accept'
+    choose_station_menu
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@stations.length)
-      @stations_to_add << @stations[menu_item-1]
-      puts @stations_to_add.map {|st| st.station_name}.join(" | ")
-      self.create_route_menu
+    when (1..@stations.size)
+      @stations_to_add << @stations[menu_item - 1]
+      puts @stations_to_add.join(' | ')
+      create_route_menu
     when 99
-      self.routes_menu until @stations_to_add.length > 1
+      routes_menu until @stations_to_add.size > 1
       @routes << Route.new(@stations_to_add)
-      self.routes_menu
+      routes_menu
     when 0
-      self.routes_menu
+      routes_menu
     else
-      puts "Wrong choice"
-      self.create_route_menu
+      puts 'Wrong choice'
+      create_route_menu
     end
   end
 
   def stations_in_route_menu
-    self.choose_route_menu
+    choose_route_menu
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@routes.length)
-      puts @routes[menu_item-1].get_stations
-      self.stations_in_route_menu
+    when (1..@routes.size)
+      puts @routes[menu_item - 1].stations_name.join(' | ')
+      stations_in_route_menu
     when 0
-      self.routes_menu
+      routes_menu
     else
-      puts "Wrong choice"
-      self.stations_in_route_menu
+      puts 'Wrong choice'
+      stations_in_route_menu
     end
   end
 
   def add_station_in_route_menu
-    self.choose_route_menu
+    choose_route_menu
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@routes.length)
-      self.choose_station_menu
+    when (1..@routes.size)
+      choose_station_menu
 
-      menu_item_2 = gets.chomp.to_i
-      case menu_item_2
-      when (1..@stations.length)
-        @routes[menu_item-1].add_station(@stations[menu_item_2-1])
-        self.add_station_in_route_menu
-      when 0
-        self.add_station_in_route_menu
+      menu_item2 = gets.chomp.to_i
+      case menu_item2
+      when (1..@stations.size)
+        @routes[menu_item - 1].add_station(@stations[menu_item2 - 1])
       else
-        puts "Wrong choice"
-        self.add_station_in_route_menu
+        puts 'Wrong choice'
       end
+      add_station_in_route_menu
     when 0
-      self.routes_menu
+      routes_menu
     else
-      puts "Wrong choice"
-      self.add_station_in_route_menu
+      puts 'Wrong choice'
+      add_station_in_route_menu
     end
   end
 
   def remove_station_from_route
-    self.choose_route_menu
+    choose_route_menu
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@routes.length)
-      puts "Chose stations:"
-      @routes[menu_item-1].stations.each.with_index { |st, i| puts "| #{i+1} | #{st.station_name}" }
-      puts "| 0 | Back"
+    when (1..@routes.size)
+      puts 'Choose station to remove:'
+      @routes[menu_item - 1].stations_name.each_with_index { |st, i| puts "| #{i + 1} | #{st}" }
+      puts '| 0 | Back'
 
-      menu_item_2 = gets.chomp.to_i
-      case menu_item_2
-      when (1..@routes[menu_item-1].stations.length)
-        @routes[menu_item-1].delete_station(@routes[menu_item-1].stations[menu_item_2-1])
-        self.remove_station_from_route
-      when 0
-        self.remove_station_from_route
+      menu_item2 = gets.chomp.to_i
+      case menu_item2
+      when (1..@routes[menu_item - 1].stations.size)
+        @routes[menu_item - 1].delete_station(@routes[menu_item - 1]
+          .stations[menu_item2 - 1])
       else
-        puts "Wrong choice"
-        self.remove_station_from_route
+        puts 'Nothing have been choosed'
       end
+      remove_station_from_route
     when 0
-      self.routes_menu
+      routes_menu
     else
-      puts "Wrong choice"
-      self.remove_station_from_route
+      puts 'Wrong choice'
+      remove_station_from_route
     end
   end
 
   def create_train_menu
-    puts "Select type of train: "
-    puts "| 1 | Passenger train"
-    puts "| 2 | Cargo train"
-    puts "| 0 | Back"
+    print "| 1 | Passenger train\n| 2 | Cargo train\n| 0 | Back\nSelect type of train: "
 
     case gets.chomp
-    when "1"
-      print "Enter number of train: "
+    when '1'
+      print 'Enter number of train: '
       @trains << PassengerTrain.new(gets.chomp)
-      puts @trains.map {|tr| tr.train_number}.join(" | ")
-      self.trains_menu
-    when "2"
-      print "Enter number of train: "
+      puts @trains.map(&:train_number).join(' | ')
+      trains_menu
+    when '2'
+      print 'Enter number of train: '
       @trains << CargoTrain.new(gets.chomp)
-      puts @trains.map {|tr| tr.train_number}.join(" | ")
-      self.trains_menu
-    when "0"
-      self.trains_menu
+      puts @trains.map(&:train_number).join(' | ')
+      trains_menu
+    when '0'
+      trains_menu
     else
-      self.create_train_menu
+      create_train_menu
     end
   end
 
   def assign_route_menu
-    self.choose_train_menu
+    choose_train_menu
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@trains.length)
-      self.choose_route_menu
+    when (1..@trains.size)
+      choose_route_menu
 
-      menu_item_2 = gets.chomp.to_i
-      case menu_item_2
-      when (1..@routes.length)
-        @trains[menu_item-1].accept_route(@routes[menu_item_2-1])
-        self.assign_route_menu
-      when 0
-        self.assign_route_menu
+      menu_item2 = gets.chomp.to_i
+      case menu_item2
+      when (1..@routes.size)
+        @trains[menu_item - 1].accept_route(@routes[menu_item2 - 1])
       else
-        puts "Wrong choice"
-        self.assign_route_menu
+        puts 'Wrong choice'
       end
+      assign_route_menu
     when 0
-      self.trains_menu
+      trains_menu
     else
-      puts "Wrong choice"
-      self.assign_route_menu
+      puts 'Wrong choice'
+      assign_route_menu
     end
   end
 
   def move_train_menu
-    self.choose_train_menu
+    choose_train_menu
 
     menu_item = gets.chomp.to_i
     case menu_item
-    when (1..@trains.length)
-      puts "Select direction: "
-      puts "| 1 | Forward"
-      puts "| 2 | Backward"
-      puts "| 0 | Back"
+    when (1..@trains.size)
+      print "| 1 | Forward\n| 2 | Backward\nSelect direction: "
 
-      menu_item_2 = gets.chomp
-      case menu_item_2
-      when "1"
-        @trains[menu_item-1].move_train("fwd")
-        puts "Current station: #{@trains[menu_item-1].get_station("current")}"
-        puts "Next station: #{@trains[menu_item-1].get_station("next")}"
-        puts "Previous: #{@trains[menu_item-1].get_station("previous")}"
-        self.move_train_menu
-      when "2"
-        @trains[menu_item-1].move_train("backwd")
-        puts "Current station: #{@trains[menu_item-1].get_station("current")}"
-        puts "Next station: #{@trains[menu_item-1].get_station("next")}"
-        puts "Previous: #{@trains[menu_item-1].get_station("previous")}"
-        self.move_train_menu
-      when "0"
-        self.move_train_menu
+      menu_item2 = gets.chomp
+      case menu_item2
+      when '1'
+        @trains[menu_item - 1].travel_forward
+      when '2'
+        @trains[menu_item - 1].travel_backward
       else
-        puts "Wrong choice"
-        self.move_train_menu
+        puts 'Wrong choice'
       end
-
+      puts "Previous station: #{@trains[menu_item - 1].previous_station}\n" +
+           "Current station: #{@trains[menu_item - 1].current_station}\n" +
+           "Next station: #{@trains[menu_item - 1].next_station}"
+      move_train_menu
     when 0
-      self.trains_menu
+      trains_menu
     else
-      puts "Wrong choice"
-      self.move_train_menu
+      puts 'Wrong choice'
+      move_train_menu
     end
   end
 
   def add_remove_railcars_menu
-    self.choose_train_menu
-
+    choose_train_menu
     menu_item = gets.chomp.to_i
+
     case menu_item
-    when (1..@trains.length)
-      puts "| 1 | Attach car"
-      puts "| 2 | Detach car"
-      puts "| 0 | Back"
+    when (1..@trains.size)
+      puts "| 1 | Attach passenger car\n| 2 | Attach freight car\n| 3 | Detach car\n| 0 | Back"
+      menu_item2 = gets.chomp
 
-      menu_item_2 = gets.chomp
-      case
-      when menu_item_2 == "1" && @trains[menu_item-1].train_type == "Passenger"
-        print "Enter number of seats: "
-        num_of_seats = gets.chomp.to_i
-        print "Enter number of cars: "
-        gets.chomp.to_i.times do
-          @trains[menu_item-1].attach_car(PassengerCar.new(num_of_seats))
-        end
-        puts "Number of cars: #{@trains[menu_item-1].rail_cars.length}"
-        self.trains_menu
-      when menu_item_2 == "1" && @trains[menu_item-1].train_type == "Cargo"
-        print "Enter load mass: "
-        load_mass = gets.chomp.to_i
-        print "Enter number of cars: "
-        gets.chomp.to_i.times do
-          @trains[menu_item-1].attach_car(FreightCar.new(load_mass))
-        end
-        puts "Number of cars: #{@trains[menu_item-1].rail_cars.length}"
-        self.trains_menu
-      when menu_item_2 == "2"
-        @trains[menu_item-1].detach_car
-        puts "Number of cars: #{@trains[menu_item-1].rail_cars.length}"
-        self.trains_menu
-      when menu_item_2 == "0"
-        self.add_remove_railcars_menu
+      case menu_item2
+      when '1'
+        attach_passenger_car(menu_item - 1)
+        trains_menu
+      when '2'
+        attach_freight_car(menu_item - 1)
+        trains_menu
+      when '3'
+        detach_car(menu_item - 1)
+        trains_menu
       else
-        puts "Wrong choice"
-        self.add_remove_railcars_menu
+        puts 'Wrong choice'
+        add_remove_railcars_menu
       end
-
     when 0
-      self.trains_menu
+      trains_menu
     else
-      puts "Wrong choice"
-      self.add_remove_railcars_menu
+      puts 'Wrong choice'
+      add_remove_railcars_menu
     end
   end
 
   def choose_route_menu
-    puts "Choose route:"
-    @routes.each.with_index do |route, i|
-      puts "| #{i+1} | From #{route.stations.first.station_name} " +
-            "to #{route.stations.last.station_name}"
+    @routes.each_with_index do |route, i|
+      puts "| #{i + 1} | From #{route.stations_name.first} " +
+           "to #{route.stations_name.last}"
     end
-    puts "| 0 | Back"
+    print "| 0 | Back\nChoose route: "
   end
 
   def choose_station_menu
-    puts "Choose station:"
-    @stations.each.with_index { |st, i| puts "| #{i+1} | #{st.station_name}" }
-    puts "| 0 | Back"
+    @stations.each_with_index { |st, i| puts "| #{i + 1} | #{st}" }
+    print "| 0 | Back\nChoose station: "
   end
 
   def choose_train_menu
-    puts "Choose train:"
-    @trains.each.with_index { |tr, i| puts "| #{i+1} | #{tr.train_number} #{tr.train_type}" }
-    puts "| 0 | Back"
+    @trains.each_with_index { |tr, i| puts "| #{i + 1} | #{tr.train_number} #{tr.train_type}" }
+    print "| 0 | Back\nChoose train: "
+  end
+
+  def attach_passenger_car(train_index)
+    return unless @trains[train_index].train_type == 'Passenger'
+
+    print 'Enter number of seats: '
+    num_of_seats = gets.chomp.to_i
+    print 'Enter number of cars: '
+    gets.chomp.to_i.times do
+      @trains[train_index].attach_car(PassengerCar.new(num_of_seats))
+    end
+    puts "Number of cars: #{@trains[train_index].number_of_cars}"
+  end
+
+  def attach_freight_car(train_index)
+    return unless @trains[train_index].train_type == 'Cargo'
+
+    print 'Enter load mass: '
+    load_mass = gets.chomp.to_i
+    print 'Enter number of cars: '
+    gets.chomp.to_i.times do
+      @trains[train_index].attach_car(FreightCar.new(load_mass))
+    end
+    puts "Number of cars: #{@trains[train_index].number_of_cars}"
+  end
+
+  def detach_car(train_index)
+    @trains[train_index].detach_car
+    puts "Number of cars: #{@trains[train_index].number_of_cars}"
   end
 end

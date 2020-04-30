@@ -1,5 +1,4 @@
 module InstanceCounter
-
   def self.included(klass)
     klass.extend(ClassMethods)
   end
@@ -8,7 +7,12 @@ module InstanceCounter
     attr_accessor :instances
   end
 
+  def all_instances
+    self.class.instances
+  end
+
   protected
+
   def register_instance
     self.class.instances ||= 0
     self.class.instances += 1
