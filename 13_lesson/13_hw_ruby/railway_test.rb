@@ -2,13 +2,15 @@ load "train.rb"
 load "station.rb"
 load "route.rb"
 load "rail_car.rb"
+load "cargo_train.rb"
+load "passenger_train.rb"
 
-talgo_01 = PassengerTrain.new("001-P")
-dhl_01 = CargoTrain.new("001-C")
+talgo01 = PassengerTrain.new("001-P")
+dhl01 = CargoTrain.new("001-C")
 
 31.times do
-  talgo_01.attach_car(PassengerCar.new(50))
-  dhl_01.attach_car(FreightCar.new(25000))
+  talgo01.attach_car(PassengerCar.new(50))
+  dhl01.attach_car(FreightCar.new(25_000))
 end
 
 almaty = Station.new("Almaty 1")
@@ -21,29 +23,29 @@ alm_osk.add_station(aqtau)
 alm_osk.add_station(nur_sultan)
 alm_osk.delete_station(aqtau)
 alm_osk.add_station(aqtau)
-alm_osk.get_stations
+puts alm_osk.get_stations
 
-talgo_01.accept_route(alm_osk)
+talgo01.accept_route(alm_osk)
 
-almaty.get_trains
-aqtau.get_trains
-nur_sultan.get_trains
-oskemen.get_trains
+puts almaty.get_trains
+puts aqtau.get_trains
+puts nur_sultan.get_trains
+puts oskemen.get_trains
 
-talgo_01.move_train("fwd")
+talgo01.travel_forward
 
-talgo_01.get_station("current")
-talgo_01.get_station("next")
-talgo_01.get_station("previous")
+puts talgo01.current_station
+puts talgo01.next_station
+puts talgo01.previous_station
 
-almaty.get_trains
-aqtau.get_trains
-nur_sultan.get_trains
-oskemen.get_trains
+puts almaty.get_trains
+puts aqtau.get_trains
+puts nur_sultan.get_trains
+puts oskemen.get_trains
 
-talgo_01.move_train("backwd")
+talgo01.travel_backward
 
-almaty.get_trains
-aqtau.get_trains
-nur_sultan.get_trains
-oskemen.get_trains
+puts almaty.get_trains
+puts aqtau.get_trains
+puts nur_sultan.get_trains
+puts oskemen.get_trains

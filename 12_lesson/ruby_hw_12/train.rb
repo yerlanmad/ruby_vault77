@@ -11,6 +11,10 @@ class Train
     @current_speed = 0
   end
 
+  def to_s
+    train_number
+  end
+
   def speed_up(speed)
     @current_speed += speed
   end
@@ -20,58 +24,64 @@ class Train
   end
 
   def attach_car
-    return if self.current_speed > 0 || self.number_of_cars >= MAX_CARS
+    return if current_speed.positive? || number_of_cars >= MAX_CARS
+
     @number_of_cars += 1
   end
 
   def detach_car
-    return if self.current_speed > 0 || self.number_of_cars < MIN_CARS
+    return if current_speed.positive? || number_of_cars < MIN_CARS
+
     @number_of_cars -= 1
   end
 
   # Может принимать маршрут следования (объект класса Route).
   def accept_route(route)
-    return if route.stations.length < 2
+    return if route.stations.size < 2
+
     @route = route
     # При назначении маршрута поезду,
     # поезд автоматически помещается на первую станцию в маршруте.
-
-
-    @route.stations.first.accept_train(self)
-    @current_station = @route.stations.first
+    @curr_st = 0
+    current_station.accept_train(self)
   end
 
   # Может перемещаться между станциями, указанными в маршруте.
   # Перемещение возможно вперед и назад, но только на 1 станцию за раз.
   # При этом поезд должен именно переместиться – его не должно быть
   # на текущей станции, но он должен появиться на следующей или предыдущей.
-  def move_train(direction)
-    case direction
-    when "fwd"
-      return if @current_station == @route.stations.last
-      next_station = @route.stations[@route.stations.index(@current_station) + 1]
-      @current_station.send_train(self, next_station)
-      @current_station = next_station
-    when "backwd"
-      return if @current_station == @route.stations.first
-      prev_station = @route.stations[@route.stations.index(@current_station) - 1]
-      @current_station.send_train(self, prev_station)
-      @current_station = prev_station
-    end
+  def travel_forward
+    return if @route.nil? || @curr_st >= @route.stations.size - 1
+
+    current_station.remove_train(self)
+    next_station.accept_train(self)
+    @curr_st += 1
+  end
+
+  def travel_backward
+    return if @route.nil? || @curr_st <= 0
+
+    current_station.remove_train(self)
+    previous_station.accept_train(self)
+    @curr_st -= 1
   end
 
   # Возвращать предыдущую станцию, текущую, следующую, на основе маршрута
-  def get_station(order_of_station)
-    case order_of_station
-    when "current"
-      @current_station.station_name
-    when "previous"
-      return if @current_station == @route.stations.first
-      @route.stations[@route.stations.index(@current_station) - 1].station_name
-    when "next"
-      return if @current_station == @route.stations.last
-      @route.stations[@route.stations.index(@current_station) + 1].station_name
-    end
+  def current_station
+    return if @route.nil?
+
+    @route.stations[@curr_st]
   end
 
+  def previous_station
+    return if @route.nil?
+
+    @route.stations[@curr_st - 1]
+  end
+
+  def next_station
+    return if @route.nil?
+
+    @route.stations[@curr_st + 1] || @route.stations[0]
+  end
 end

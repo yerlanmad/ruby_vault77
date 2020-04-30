@@ -16,9 +16,8 @@ class Route
   end
 
   def get_stations
-    self.stations.each { |el| p el.station_name}
+    stations.each { |el| p el.station_name }
   end
-
 end
 
 class Train
@@ -38,27 +37,22 @@ class Train
     @current_speed += speed
   end
 
-   def stop_train
-     @current_speed = 0
-   end
-
-  # def add_car(is_add = false)
-  #   return if self.speed > 0 || (!is_add && self.number_of_cars < 1)
-  #   is_add ? @number_of_cars += 1 : @number_of_cars -= 1
-  # end
+  def stop_train
+    @current_speed = 0
+  end
 
   def attach_car
-    return if self.current_speed > 0 || self.number_of_cars >= MAX_CARS
+    return if current_speed.positive? || number_of_cars >= MAX_CARS
+
     @number_of_cars += 1
   end
 
   def detach_car
-    return if self.current_speed > 0 || self.number_of_cars < MIN_CARS
+    return if current_speed.positive? || number_of_cars < MIN_CARS
+
     @number_of_cars -= 1
   end
-
 end
-
 
 almaty = Station.new("Almaty 1")
 
@@ -67,10 +61,10 @@ nur_sultan = Station.new("Nurly Zhol")
 almaty_nur_sultan = Route.new(almaty, nur_sultan)
 almaty_nur_sultan.get_stations
 
-talgo_111 = Train.new("111x", "P", 17)
-talgo_111.speed_up(50)
-talgo_111.current_speed
-talgo_111.stop_train
-talgo_111.current_speed
-talgo_111.attach_car
-talgo_111.detach_car
+talgo111 = Train.new("111x", "P", 17)
+talgo111.speed_up(50)
+talgo111.current_speed
+talgo111.stop_train
+talgo111.current_speed
+talgo111.attach_car
+talgo111.detach_car

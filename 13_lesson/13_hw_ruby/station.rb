@@ -6,9 +6,17 @@ class Station
     @trains = []
   end
 
+  def to_s
+    @station_name
+  end
   # Может принимать поезда (объекты класса Train, по одному за раз)
+
   def accept_train(train)
-    @trains.push(train)
+    @trains << train
+  end
+
+  def remove_train(train)
+    @trains.delete(train)
   end
 
   # Может возвращать список всех поездов на станции
@@ -16,16 +24,16 @@ class Station
   # должен вернуть поезда определенного типа, находящихся на станции.
   def get_trains(type = "all")
     if type == "all"
-      @trains.each { |el| p el.train_number }
+      @trains
     else
-      @trains.select { |el| el.train_type == type  }.each { |el| p el.train_number }
+      @trains.select { |el| el.train_type == type }
     end
   end
 
   # Может отправлять поезда на другие станции маршрута (по одному за раз,
   # при этом, поезд удаляется из списка поездов, находящихся на станции)
-  def send_train(train, station_name)
-    station_name.accept_train(train)
-    @trains.delete(train)
+  def send_train(train, station)
+    station.accept_train(train)
+    remove_train(train)
   end
 end

@@ -12,31 +12,31 @@ alm_osk.add_station(aqtau)
 alm_osk.add_station(nur_sultan)
 alm_osk.delete_station(aqtau)
 alm_osk.add_station(aqtau)
-alm_osk.get_stations
+puts alm_osk.get_stations
 
-talgo_01 = Train.new("01A", "P", 19)
+talgo01 = Train.new("01A", "P", 19)
 
-talgo_01.accept_route(alm_osk)
+talgo01.accept_route(alm_osk)
 
-almaty.get_trains
-aqtau.get_trains
-nur_sultan.get_trains
-oskemen.get_trains
+puts almaty.get_trains
+puts aqtau.get_trains
+puts nur_sultan.get_trains
+puts oskemen.get_trains
 
-talgo_01.move_train("fwd")
+talgo01.travel_forward
 
-talgo_01.get_station("current")
-talgo_01.get_station("next")
-talgo_01.get_station("previous")
+puts talgo01.current_station
+puts talgo01.next_station
+puts talgo01.previous_station
 
-almaty.get_trains
-aqtau.get_trains
-nur_sultan.get_trains
-oskemen.get_trains
+puts almaty.get_trains
+puts aqtau.get_trains
+puts nur_sultan.get_trains
+puts oskemen.get_trains
 
-talgo_01.move_train("backwd")
+talgo01.travel_backward
 
-almaty.get_trains
-aqtau.get_trains
-nur_sultan.get_trains
-oskemen.get_trains
+puts almaty.get_trains
+puts aqtau.get_trains
+puts nur_sultan.get_trains
+puts oskemen.get_trains

@@ -64,38 +64,52 @@ class Train
   # При этом поезд должен именно переместиться – его не должно быть
   # на текущей станции, но он должен появиться на следующей или предыдущей.
   def travel_forward
-    return if @route.nil? || @curr_st >= @route.stations.size - 1
+    raise "RouteNilException" if @route.nil?
+
+    return until @curr_st < @route.stations.size - 1
 
     current_station.remove_train(self)
     next_station.accept_train(self)
     @curr_st += 1
+  rescue RuntimeError => e
+    puts "! #{e.message}: Route is not accepted to the train"
   end
 
   def travel_backward
-    return if @route.nil? || @curr_st <= 0
+    raise "RouteNilException" if @route.nil?
+
+    return until @curr_st.positive?
 
     current_station.remove_train(self)
     previous_station.accept_train(self)
     @curr_st -= 1
+  rescue RuntimeError => e
+    puts "! #{e.message}: Route is not accepted to the train"
   end
 
   # Возвращать предыдущую станцию, текущую, следующую, на основе маршрута
   def current_station
-    return if @route.nil?
+    raise "RouteNilException" if @route.nil?
 
     @route.stations[@curr_st]
+  rescue RuntimeError => e
+    puts "! #{e.message}: Route is not accepted to the train"
   end
 
   def previous_station
-    return if @route.nil?
+    raise "RouteNilException" if @route.nil?
 
     @route.stations[@curr_st - 1]
+  rescue RuntimeError => e
+    puts "! #{e.message}: Route is not accepted to the train"
   end
 
   def next_station
-    return if @route.nil?
+    raise "RouteNilException" if @route.nil?
 
     @route.stations[@curr_st + 1] || @route.stations[0]
+  rescue RuntimeError => e
+    puts "! #{e.message}: Route is not accepted to the train"
   end
 
   def number_of_cars
