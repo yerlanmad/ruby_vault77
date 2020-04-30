@@ -8,79 +8,95 @@ class Train
   # метод класса find, который принимает номер поезда (указанный при его создании)
   # и возвращает объект поезда по номеру или nil,
   # если поезд с таким номером не найден.
-
   def self.find(number)
     @@trains.find { |tr| tr.train_number == number }
   end
 
-  attr_reader :current_speed, :train_number, :train_type, :rail_cars
+  attr_reader :current_speed, :train_number, :train_type
 
-  def initialize(train_number)
-    @train_number = train_number
-    @rail_cars = []
+  def initialize(**opts)
+    @train_number = opts[:number]
+    @rail_cars = opts[:cars] || []
+    @train_type = opts[:type] || default_train_type
+    @manufacturer = opts[:manufacturer] || default_manufacturer
     @current_speed = 0
+    post_initialize(opts)
     @@trains << self
     register_instance
   end
 
-  def attach_car(car)
-    return if current_speed > 0 || rail_cars.count >= MAX_CARS
+  def to_s
+    train_number
+  end
 
-    @rail_cars.push(car)
+  def attach_car(car)
+    return if current_speed.positive? || number_of_cars >= MAX_CARS
+
+    @rail_cars << car
   end
 
   def detach_car
-    return if current_speed > 0 || rail_cars.count < MIN_CARS
+    return if current_speed.positive? || number_of_cars < MIN_CARS
 
     @rail_cars.pop
   end
 
   # Может принимать маршрут следования (объект класса Route).
   def accept_route(route)
-    return if route.stations.length < 2
+    return if route.stations.size < 2
 
     @route = route
     # При назначении маршрута поезду,
     # поезд автоматически помещается на первую станцию в маршруте.
-    @route.stations.first.accept_train(self)
-    @current_station = @route.stations.first
+    @curr_st = 0
+    current_station.accept_train(self)
   end
 
   # Может перемещаться между станциями, указанными в маршруте.
   # Перемещение возможно вперед и назад, но только на 1 станцию за раз.
   # При этом поезд должен именно переместиться – его не должно быть
   # на текущей станции, но он должен появиться на следующей или предыдущей.
-  def move_train(direction)
-    case direction
-    when 'fwd'
-      return if @current_station == @route.stations.last
+  def travel_forward
+    return if @route.nil?
 
-      next_station = @route.stations[@route.stations.index(@current_station) + 1]
-      @current_station.send_train(self, next_station)
-      @current_station = next_station
-    when 'backwd'
-      return if @current_station == @route.stations.first
+    return until @curr_st < @route.stations.size - 1
 
-      prev_station = @route.stations[@route.stations.index(@current_station) - 1]
-      @current_station.send_train(self, prev_station)
-      @current_station = prev_station
-    end
+    current_station.remove_train(self)
+    next_station.accept_train(self)
+    @curr_st += 1
+  end
+
+  def travel_backward
+    return if @route.nil?
+
+    return until @curr_st.positive?
+
+    current_station.remove_train(self)
+    previous_station.accept_train(self)
+    @curr_st -= 1
   end
 
   # Возвращать предыдущую станцию, текущую, следующую, на основе маршрута
-  def get_station(order_of_station = 'current')
-    case order_of_station
-    when 'current'
-      @current_station.station_name
-    when 'previous'
-      return if @current_station == @route.stations.first
+  def current_station
+    return if @route.nil?
 
-      @route.stations[@route.stations.index(@current_station) - 1].station_name
-    when 'next'
-      return if @current_station == @route.stations.last
+    @route.stations[@curr_st]
+  end
 
-      @route.stations[@route.stations.index(@current_station) + 1].station_name
-    end
+  def previous_station
+    return if @route.nil?
+
+    @route.stations[@curr_st - 1]
+  end
+
+  def next_station
+    return if @route.nil?
+
+    @route.stations[@curr_st + 1] || @route.stations[0]
+  end
+
+  def number_of_cars
+    @rail_cars.size
   end
 
   protected
@@ -91,5 +107,12 @@ class Train
 
   def stop_train
     @current_speed = 0
+  end
+
+  # subclasses may override
+  def post_initialize(opts); end
+
+  def default_train_type
+    'Mixed'
   end
 end
