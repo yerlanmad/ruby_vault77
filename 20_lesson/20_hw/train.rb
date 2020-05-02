@@ -16,7 +16,8 @@ class Train
 
   def initialize(**opts)
     @train_number = opts[:number]
-    raise "ValidationError" unless validate?
+    Validator.validate_nil(@train_number)
+    Validator.validate_size(@train_number)
 
     @rail_cars = opts[:cars] || []
     @train_type = opts[:type] || default_train_type
@@ -25,7 +26,7 @@ class Train
     post_initialize(opts)
     @@trains << self
     register_instance
-  rescue RuntimeError => e
+  rescue Validator::AttributeSizeError => e
     puts e.message
     print 'Enter number of train: '
     opts[:number] = gets.chomp
@@ -37,20 +38,20 @@ class Train
   end
 
   def attach_car(car)
-    raise "AttachCarError" if current_speed.positive? || number_of_cars >= MAX_CARS
+    return if current_speed.positive? || number_of_cars >= MAX_CARS
 
     @rail_cars << car
   end
 
   def detach_car
-    raise "DetachCarError" if current_speed.positive? || number_of_cars < MIN_CARS
+    return if current_speed.positive? || number_of_cars < MIN_CARS
 
     @rail_cars.pop
   end
 
   # Может принимать маршрут следования (объект класса Route).
   def accept_route(route)
-    raise "RouteSizeError" if route.stations.size < 2
+    return if route.stations.size < 2
 
     @route = route
     # При назначении маршрута поезду,
@@ -64,51 +65,49 @@ class Train
   # При этом поезд должен именно переместиться – его не должно быть
   # на текущей станции, но он должен появиться на следующей или предыдущей.
   def travel_forward
-    raise "RouteNilException" if @route.nil?
-
+    Validator.validate_nil(@route)
     return until @curr_st < @route.stations.size - 1
 
     current_station.remove_train(self)
     next_station.accept_train(self)
     @curr_st += 1
-  rescue RuntimeError => e
+  rescue Validator::AttributeNilError => e
     puts "! #{e.message}: Route is not accepted to the train"
   end
 
   def travel_backward
-    raise "RouteNilException" if @route.nil?
-
+    Validator.validate_nil(@route)
     return until @curr_st.positive?
 
     current_station.remove_train(self)
     previous_station.accept_train(self)
     @curr_st -= 1
-  rescue RuntimeError => e
+  rescue Validator::AttributeNilError => e
     puts "! #{e.message}: Route is not accepted to the train"
   end
 
   # Возвращать предыдущую станцию, текущую, следующую, на основе маршрута
   def current_station
-    raise "RouteNilException" if @route.nil?
+    Validator.validate_nil(@route)
 
     @route.stations[@curr_st]
-  rescue RuntimeError => e
+  rescue Validator::AttributeNilError => e
     puts "! #{e.message}: Route is not accepted to the train"
   end
 
   def previous_station
-    raise "RouteNilException" if @route.nil?
+    Validator.validate_nil(@route)
 
     @route.stations[@curr_st - 1]
-  rescue RuntimeError => e
+  rescue Validator::AttributeNilError => e
     puts "! #{e.message}: Route is not accepted to the train"
   end
 
   def next_station
-    raise "RouteNilException" if @route.nil?
+    Validator.validate_nil(@route)
 
     @route.stations[@curr_st + 1] || @route.stations[0]
-  rescue RuntimeError => e
+  rescue Validator::AttributeNilError => e
     puts "! #{e.message}: Route is not accepted to the train"
   end
 
@@ -124,10 +123,6 @@ class Train
 
   def stop_train
     @current_speed = 0
-  end
-
-  def validate?
-    (3..5).include?(train_number.size)
   end
 
   # subclasses may override

@@ -314,7 +314,7 @@ class App
   end
 
   def attach_passenger_car(train_index)
-    raise "TrainTypeError" unless @trains[train_index].train_type == 'Passenger'
+    return unless @trains[train_index].train_type == 'Passenger'
 
     print 'Enter number of seats: '
     num_of_seats = gets.chomp.to_i
@@ -326,7 +326,7 @@ class App
   end
 
   def attach_freight_car(train_index)
-    raise "TrainTypeError" unless @trains[train_index].train_type == 'Cargo'
+    return unless @trains[train_index].train_type == 'Cargo'
 
     print 'Enter load mass: '
     load_mass = gets.chomp.to_i

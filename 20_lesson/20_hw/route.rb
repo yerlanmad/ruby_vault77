@@ -10,9 +10,12 @@ class Route
   attr_reader :stations
 
   # Может иметь промежуточные станции между начальной и конечной
-  def initialize(args)
-    @stations = args
-    @@routes[self] = stations
+  def initialize(stations)
+    @stations = stations
+    Validator.validate_nil(@stations)
+    Validator.validate_size(@stations)
+
+    @@routes[self] = self.stations
   end
 
   # Может добавлять промежуточную станцию в список (станция должна быть

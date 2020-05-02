@@ -8,6 +8,9 @@ class Station
 
   def initialize(**opts)
     @station_name = opts[:name]
+    Validator.validate_nil(@station_name)
+    Validator.validate_size(@station_name)
+
     @trains = opts[:trains] || []
     @@stations << self
   end
