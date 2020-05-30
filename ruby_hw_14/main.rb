@@ -6,4 +6,4 @@ require_relative "passenger_car"
 require_relative "cargo_car"
 require_relative "app_new"
 
-App.new.menu_loop
+App.new.menu
