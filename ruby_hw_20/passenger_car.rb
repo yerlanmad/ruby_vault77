@@ -11,6 +11,8 @@ class PassengerCar < RailCar
     validate
   end
 
+  private
+
   def validate
     super(seats_amount)
     raise AttributeSizeError unless (15..70).include?(seats_amount)

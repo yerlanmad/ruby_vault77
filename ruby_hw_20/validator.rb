@@ -1,28 +1,18 @@
 # frozen_string_literal: true
 
 module Validator
-  class AttributeSizeError < StandardError
-    def message
-      "Attribute's size is not valid"
-    end
+  protected
+
+  def present?(attribute)
+    !(attribute.nil? || attribute == '' || attribute == 0 || attribute == [])
   end
 
-  class AttributePresentError < StandardError
-    def message
-      'Attribute is not present'
-    end
+  def valid_size?(attribute)
+    (2..50).include?(attribute.size)
   end
 
-  def present?(object)
-    !(object.nil? || object == '' || object == 0 || object == [])
-  end
-
-  def valid_size?(object)
-    (2..50).include?(object.size)
-  end
-
-  def validate(object)
-    raise AttributePresentError unless present?(object)
-    raise AttributeSizeError unless valid_size?(object)
+  def validate(attribute)
+    raise AttributePresentError unless present?(attribute)
+    raise AttributeSizeError unless valid_size?(attribute)
   end
 end

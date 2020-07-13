@@ -14,8 +14,8 @@ class Route
   def initialize(first_station, last_station)
     @stations = [first_station, last_station]
     @name = "#{first_station.name}_#{last_station.name}"
-    validate(stations)
-    validate(name)
+    validate
+
     @@routes[self] = stations
   end
 
@@ -33,5 +33,12 @@ class Route
 
   def stations_name
     stations.map(&:name)
+  end
+
+  private
+
+  def validate
+    super(stations)
+    super(name)
   end
 end

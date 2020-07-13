@@ -11,6 +11,8 @@ class CargoCar < RailCar
     validate
   end
 
+  private
+
   def validate
     super(volume)
     raise AttributeSizeError unless (5_000..40_000).include?(volume)

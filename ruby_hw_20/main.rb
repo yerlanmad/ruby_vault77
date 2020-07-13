@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'errors/attribute_errors'
 require_relative 'validator'
 require_relative 'manufacturer'
 require_relative 'instance_counter'
