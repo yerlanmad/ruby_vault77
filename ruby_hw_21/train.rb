@@ -6,10 +6,13 @@ class Train
   include Validator
   MAX_CARS = 30
   MIN_CARS = 1
-  @@trains = []
+  
+  class << self
+    attr_accessor :trains
 
-  def self.find(number)
-    @@trains.find { |train| train.number == number }
+    def find(number)
+      trains.find { |train| train.number == number }
+    end
   end
 
   attr_reader :number, :type, :rail_cars, :current_speed
@@ -20,7 +23,8 @@ class Train
     @current_speed = 0
     validate(number)
 
-    @@trains << self
+    self.class.trains ||= []
+    self.class.trains << self
     register_instance
   end
 
@@ -89,8 +93,10 @@ class Train
   end
 
   def each_rail_car
+    return unless block_given?
+
     rail_cars.each_with_index do |car, index|
-      yield(car, index) if block_given?
+      yield(car, index)
     end
   end
 
