@@ -6,7 +6,7 @@ module Logable
   end
 
   module ClassMethods
-    attr_accessor :log_counter, :log_path
+    attr_accessor :log_path
 
     def read_file(file_path)
       return until file_path
@@ -21,14 +21,13 @@ module Logable
   protected
 
   def write_log(data)
-    self.class.log_counter ||= 1
     self.class.log_path ||= "logs/#{self.class}.log"
-
-    File.open(self.class.log_path, 'a') do |f|
-      f.puts "#{self.class.log_counter}. #{data}"
+  
+    File.open(self.class.log_path, 'a+') do |f|
+      counter = 1
+      f.each { counter += 1 }
+      f.puts "#{counter}. #{data}"
     end
-
-    self.class.log_counter += 1
   end
 
   def write_error(message)
