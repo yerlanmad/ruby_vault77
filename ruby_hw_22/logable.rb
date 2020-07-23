@@ -11,10 +11,7 @@ module Logable
     def read_file(file_path)
       return until file_path
 
-      file = File.new(file_path)
-      data = file.read
-      puts data
-      file.close
+      puts File.read(file_path)
     end
   end
 
@@ -22,10 +19,9 @@ module Logable
 
   def write_log(data)
     self.class.log_path ||= "logs/#{self.class}.log"
-  
+
     File.open(self.class.log_path, 'a+') do |f|
-      counter = 1
-      f.each { counter += 1 }
+      counter = f.readlines.size + 1
       f.puts "#{counter}. #{data}"
     end
   end

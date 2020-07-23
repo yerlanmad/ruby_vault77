@@ -10,9 +10,7 @@ class PassengerCar < RailCar
     @type = 'Passenger'
     @occupied_seats = 0
     validate
-    write_log("#{type}, seats amount: #{seats_amount}")
-  rescue AttributeSizeError, AttributePresentError => e
-    write_error(e.message)
+    write_log("#{type}, seats amount: #{seats_amount}") if valid?
   end
 
   def take_place
@@ -30,5 +28,10 @@ class PassengerCar < RailCar
   def validate
     super(seats_amount)
     raise AttributeSizeError unless (15..70).include?(seats_amount)
+  rescue AttributeSizeError, AttributePresentError => e
+    write_error(e.message)
+    self.valid = false
+  else
+    self.valid = true
   end
 end

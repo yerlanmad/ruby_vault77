@@ -46,7 +46,7 @@ class App
     return unless name
 
     station = Station.new(name)
-    stations << station
+    stations << station if station.valid?
   end
 
   def create_train
@@ -55,7 +55,7 @@ class App
     return unless index
 
     train = train_options.values[index].new(number)
-    trains << train
+    trains << train if train.valid?
   end
 
   def create_route
@@ -63,7 +63,8 @@ class App
     last = prompt_index('Choose last station for route: ', stations.map(&:name))
     return unless first && last
 
-    routes << Route.new(stations[first], stations[last])
+    route = Route.new(stations[first], stations[last])
+    routes << route if route.valid?
   end
 
   def add_station
@@ -96,10 +97,12 @@ class App
 
     if trains[train_index].is_a? PassengerTrain
       print 'Enter number of seats: '
-      trains[train_index].attach_car(PassengerCar.new(gets.to_i))
+      car = PassengerCar.new(gets.to_i)
+      trains[train_index].attach_car(car) if car.valid?
     elsif trains[train_index].is_a? CargoTrain
       print 'Enter load mass: '
-      trains[train_index].attach_car(CargoCar.new(gets.to_i))
+      car = CargoCar.new(gets.to_i)
+      trains[train_index].attach_car(car) if car.valid?
     end
   end
 

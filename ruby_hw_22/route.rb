@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Route
-  include Validator
+  include Validateable
   include Logable
 
   @@routes = {}
@@ -17,9 +17,7 @@ class Route
     @name = "#{first_station.name}_#{last_station.name}"
     validate
 
-    @@routes[self] = stations
-  rescue AttributeSizeError, AttributePresentError => e
-    write_error(e.message)
+    @@routes[self] = stations if valid?
   end
 
   def add_station(station)
@@ -43,5 +41,10 @@ class Route
   def validate
     super(stations)
     super(name)
+  rescue AttributeSizeError, AttributePresentError => e
+    write_error(e.message)
+    self.valid = false
+  else
+    self.valid = true
   end
 end

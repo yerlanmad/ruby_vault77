@@ -10,9 +10,7 @@ class CargoCar < RailCar
     @type = 'Cargo'
     @occupied_volume = 0
     validate
-    write_log("#{type}, capacity: #{capacity}")
-  rescue AttributeSizeError, AttributePresentError => e
-    write_error(e.message)
+    write_log("#{type}, capacity: #{capacity}") if valid?
   end
 
   def fill(volume)
@@ -30,5 +28,10 @@ class CargoCar < RailCar
   def validate
     super(capacity)
     raise AttributeSizeError unless (5_000..40_000).include?(capacity)
+  rescue AttributeSizeError, AttributePresentError => e
+    write_error(e.message)
+    self.valid = false
+  else
+    self.valid = true
   end
 end

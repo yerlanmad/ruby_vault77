@@ -3,7 +3,7 @@
 class Train
   include Manufacturer
   include InstanceCounter
-  include Validator
+  include Validateable
   include Logable
   MAX_CARS = 30
   MIN_CARS = 1
@@ -22,14 +22,17 @@ class Train
     @number = number
     @rail_cars = []
     @current_speed = 0
-    validate(number)
-    log
+    validate
+    return unless valid?
 
+    log
+    add_train
+    register_instance
+  end
+
+  def add_train
     self.class.trains ||= []
     self.class.trains << self
-    register_instance
-  rescue AttributeSizeError, AttributePresentError => e
-    write_error(e.message)
   end
 
   def attach_car(car)
@@ -70,17 +73,22 @@ class Train
   end
 
   def current_station
-    route&.stations&.[](current_station_index)
+    return unless route
+
+    route.stations[current_station_index]
   end
 
   def previous_station
+    return unless route
     return unless current_station_index.positive?
 
-    route&.stations&.[](current_station_index - 1)
+    route.stations[current_station_index - 1]
   end
 
   def next_station
-    route&.stations&.[](current_station_index + 1)
+    return unless route
+
+    route.stations[current_station_index + 1]
   end
 
   def cars_amount
@@ -116,5 +124,14 @@ class Train
            "current station: #{current_station&.name}, " \
            "route: #{route&.name}"
     write_log(data)
+  end
+
+  def validate
+    super(number)
+  rescue AttributeSizeError, AttributePresentError => e
+    write_error(e.message)
+    self.valid = false
+  else
+    self.valid = true
   end
 end

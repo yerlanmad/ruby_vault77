@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-module Validator
+module Validateable
+  attr_reader :valid
+  alias valid? valid
+
   protected
 
   def validate(attribute)
@@ -9,6 +12,8 @@ module Validator
   end
 
   private
+
+  attr_writer :valid
 
   def present?(attribute)
     !(attribute.nil? || attribute == '' || attribute == 0 || attribute == [])

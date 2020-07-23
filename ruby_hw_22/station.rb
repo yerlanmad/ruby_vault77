@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Station
-  include Validator
+  include Validateable
   include Logable
 
   @@stations = []
@@ -15,12 +15,10 @@ class Station
   def initialize(name)
     @name = name
     @trains = []
-    validate(name)
-    write_log("Station: #{name}")
+    validate
+    write_log("Station: #{name}") if valid?
 
-    @@stations << self
-  rescue AttributeSizeError, AttributePresentError => e
-    write_error(e.message)
+    @@stations << self if valid?
   end
 
   def accept_train(train)
@@ -52,5 +50,16 @@ class Station
     trains.each do |train|
       yield(train)
     end
+  end
+
+  private
+
+  def validate
+    super(name)
+  rescue AttributeSizeError, AttributePresentError => e
+    write_error(e.message)
+    self.valid = false
+  else
+    self.valid = true
   end
 end
