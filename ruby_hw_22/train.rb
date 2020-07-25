@@ -3,7 +3,7 @@
 class Train
   include Manufacturer
   include InstanceCounter
-  include Validateable
+  include Validatable
   include Logable
   MAX_CARS = 30
   MIN_CARS = 1

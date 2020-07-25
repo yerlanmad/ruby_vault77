@@ -3,11 +3,12 @@ RSpec.describe Train do
   let!(:station1) { Station.new('station1') }
   let!(:station2) { Station.new('station2') }
   let!(:route) { Route.new(station1, station2) }
-  let!(:railcar) { railcar = PassengerCar.new(25) }
-
-
-  before { train.accept_route(route) }
-
+  let!(:railcar) { PassengerCar.new(25) }
+  let(:route2) { Route.new(station2, station1) }
+  let(:railcar2) { PassengerCar.new(25) }
+  let(:train3) { PassengerTrain.new('005P') }
+  let(:train4) { CargoTrain.new('010C') }
+ 
   describe '#number' do
     it 'returns train number' do
       expect(train.number).to eq '777T'
@@ -44,55 +45,55 @@ RSpec.describe Train do
     end
   end
 
-  describe '#accept_route' do
-    it 'accepts route' do
-      route2 = Route.new(station2, station1)
-      train.accept_route(route2)
+  context 'with accepted route' do
+    before { train.accept_route(route) }
 
-      expect(train.current_station).to eq station2
+    describe '#accept_route' do
+      it 'accepts route' do
+        expect(train.current_station).to eq station1
+      end
     end
-  end
 
-  describe '#travel_forward' do
-    it 'moves train forward' do
-      train.travel_forward
+    describe '#travel_forward' do
+      it 'moves train forward' do
+        train.travel_forward
 
-      expect(train.current_station).to eq station2
+        expect(train.current_station).to eq station2
+      end
     end
-  end
 
-  describe '#travel_backward' do
-    it 'moves train forward' do
-      train.travel_forward
-      train.travel_backward
+    describe '#travel_backward' do
+      it 'moves train forward' do
+        train.travel_forward
+        train.travel_backward
 
-      expect(train.current_station).to eq station1
+        expect(train.current_station).to eq station1
+      end
     end
-  end
 
-  describe '#current_station' do
-    it 'returns current station' do
-      expect(train.current_station).to eq station1
+    describe '#current_station' do
+      it 'returns current station' do
+        expect(train.current_station).to eq station1
+      end
     end
-  end
-  
-  describe '#previous_station' do
-    it 'returns previuos station' do
-      train.travel_forward
+    
+    describe '#previous_station' do
+      it 'returns previuos station' do
+        train.travel_forward
 
-      expect(train.previous_station).to eq station1
+        expect(train.previous_station).to eq station1
+      end
     end
-  end
 
-  describe '#next_station' do
-    it 'returns next station' do
-      expect(train.next_station).to eq station2
+    describe '#next_station' do
+      it 'returns next station' do
+        expect(train.next_station).to eq station2
+      end
     end
   end
 
   describe '#cars_amount' do
     it 'returns railcars amount' do
-      railcar2 = PassengerCar.new(25)
       train.attach_car(railcar)
       train.attach_car(railcar2)
 
@@ -118,9 +119,6 @@ RSpec.describe Train do
 
   describe '#name' do
     it 'returns train name' do
-      train3 = PassengerTrain.new('005P')
-      train4 = CargoTrain.new('010C')
-      
       expect(train3.name).to eq '005P(Passenger)'
       expect(train4.name).to eq '010C(Cargo)'
     end
@@ -128,7 +126,6 @@ RSpec.describe Train do
 
   describe '#each_rail_car' do
     it 'iterates each railcar' do
-      railcar2 = PassengerCar.new(25)
       train.attach_car(railcar)
       train.attach_car(railcar2)
       railcars = []

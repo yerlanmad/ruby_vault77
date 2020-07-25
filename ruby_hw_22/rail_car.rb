@@ -2,6 +2,6 @@
 
 class RailCar
   include Manufacturer
-  include Validateable
+  include Validatable
   include Logable
 end

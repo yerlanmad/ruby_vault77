@@ -2,6 +2,7 @@ RSpec.describe Route do
   let!(:station1) { Station.new('station1') }
   let!(:station2) { Station.new('station2') }
   let!(:route) { Route.new(station1, station2) }
+  let(:station3) { Station.new('station3') }
 
   describe '#stations' do
     it 'returns stations' do
@@ -17,7 +18,6 @@ RSpec.describe Route do
 
   describe '#add_station' do
     it 'add station' do
-      station3 = Station.new('station3')
       route.add_station(station3)
 
       expect(route.stations).to eq [station1, station3, station2]
@@ -26,7 +26,6 @@ RSpec.describe Route do
   
   describe '#delete_station' do
     it 'delete station' do
-      station3 = Station.new('station3')
       route.add_station(station3)
       expect(route.stations).to eq [station1, station3, station2]
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Route
-  include Validateable
+  include Validatable
   include Logable
 
   @@routes = {}

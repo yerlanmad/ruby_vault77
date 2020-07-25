@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Station
-  include Validateable
+  include Validatable
   include Logable
 
   @@stations = []

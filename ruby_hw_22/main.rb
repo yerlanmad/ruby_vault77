@@ -3,7 +3,7 @@
 require_relative 'errors/attribute_errors'
 require_relative 'manufacturer'
 require_relative 'instance_counter'
-require_relative 'validateable'
+require_relative 'validatable'
 require_relative 'logable'
 require_relative 'station'
 require_relative 'route'

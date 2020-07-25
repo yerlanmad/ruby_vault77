@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-module Validateable
+require_relative '../errors/attribute_errors'
+
+
+module Validatable
   attr_reader :valid
   alias valid? valid
 
